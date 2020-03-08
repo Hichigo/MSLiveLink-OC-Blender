@@ -18,6 +18,9 @@ from bpy.types import Operator, AddonPreferences
 from bpy.props import IntProperty, EnumProperty, BoolProperty
 
 globals()['Megascans_DataSet'] = None
+globals()['MG_Material'] = []
+globals()['MG_AlembicPath'] = []
+globals()['MG_ImportComplete'] = False
 
 bl_info = {
     "name": "Megascans LiveLink Octane",
