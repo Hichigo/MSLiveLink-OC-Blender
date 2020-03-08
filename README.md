@@ -44,6 +44,12 @@ Minimum textures to get a correct response
 
 ![image-20200308173100845](assets/image-20200308173100845.png)
 
+Complete nodes setup
+
+![image-20200308174856061](assets/image-20200308174856061.png)
+
+![image-20200308175602574](assets/image-20200308175602574.png)
+
 Textures info
 
 
