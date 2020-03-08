@@ -7,29 +7,21 @@ Quixel Megascans Plugin for Octane Blender Edition
 
 [Quixel Official Documentation](https://help.quixel.com/hc/en-us/articles/360002425298-Installing-the-Megascans-Plugin-for-Blender-2-8)
 
-MSLiveLink Octane version 1.1.0
+MSLiveLink Octane version 1.3.0
 
-Official base addon version 1.2
+Official base addon version 2.7
 
-OctaneRender™ for Blender 2019.1.4 - 20.6 [TEST] and later
+OctaneRender™ for Blender 2019 and later
 
 ## Installation
 
 1. Download this repository as a zip
-
-2. Extract the MSLiveLink_Octane folder (not the MSLiveLink-OC-Blender-master)
-
-3. Copy it into BlenderOctane addon's folder
-
-   > ..\BlenderOctane\2.81\scripts\addons **OR**
-   >
-   > C:\Users\\[Username]\AppData\Roaming\Blender Foundation\Blender\2.81\scripts\addons
-
-4. Activate it in Blender addons
-5. Switch to Octane Render engine
-6. File > Import > Megascans LiveLink Octane will activate a socket client listening to the Megascans Bridge
-7. Open the Megascans Bridge and change the export method to Blender
-8. Click export. Feel fun
+2. Right click the MSLiveLink_Octane folder (not the MSLiveLink-OC-Blender-master) and select Send > As ZIP file
+4. In Octane Blender, install the addon from the zip file
+4. Activate it
+5. **File > Import > Start Megascans LiveLink Octane** will activate a socket client listening to the Megascans Bridge
+6. Open the Megascans Bridge and change the export method to Blender
+7. Click export. Feel fun
 
 ![1](assets/1.jpg)
 
@@ -42,27 +34,22 @@ OctaneRender™ for Blender 2019.1.4 - 20.6 [TEST] and later
 Otherwise, socket running in the thread will cause a problem
 
 ## Features
-> Specular map option in Megascans Bridge is suggested to be turned on before you download the asset
-
-> Bump and Cavity maps are optional and not recommanded to use directly
-
-> If you see some chunks on the texture, it's probally caused by the Bump map
+> Please turn on the **Specular map** option when you download the assets or export them from the Bridge, otherwise, the specular value will be set to 0.5 by default
 
 
-| Title        | Status        |
-| ------------ | ------------- |
-| Albedo       | Supported     |
-| Displacement | Supported     |
-| Normal       | Supported     |
-| Roughness    | Supported     |
-| Specular     | Supported     |
-| Opacity      | Supported     |
-| Translucency | Supported     |
-| Metalness    | Supported     |
-| Bump         | Supported     |
-| Fuzz         | Supported     |
-| Cavity       | Supported     |
-| AO           | Not Supported |
-| Gloss        | Not Supported |
-| Normal Bump  | Not Supported |
+| Textures     | Info                             |
+| ------------ | -------------------------------- |
+| Albedo       | Added by default (If exists)     |
+| Displacement | Added by default (If exists)     |
+| Normal       | Added by default (If exists)     |
+| Roughness    | Added by default (If exists)     |
+| Specular     | Added by default (If exists)     |
+| Opacity      | Added by default (If exists)     |
+| Translucency | Added by default (If exists)     |
+| Metalness    | Added by default (If exists)     |
+| AO           | Added by default (If exists)     |
+| Bump         | Optional (Toggle in preferences) |
+| Fuzz         | Optional (Toggle in preferences) |
+| Cavity       | Optional (Toggle in preferences) |
+| Curvature    | Optional (Toggle in preferences) |
 
