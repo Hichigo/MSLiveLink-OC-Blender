@@ -31,7 +31,7 @@ bl_info = {
     "name": "Megascans LiveLink Octane",
     "description": "Connects Octane Blender to Quixel Bridge for one-click imports with shader setup and geometry",
     "author": "Yichen Dou",
-    "version": (1, 3),
+    "version": (1, 4, 0),
     "blender": (2, 81, 0),
     "location": "File > Import",
     "warning": "",  # used for warning icon and text in addons panel
@@ -341,7 +341,10 @@ class MS_Init_ImportProcess():
 
     def SetupMaterial(self):
         prefs = bpy.context.preferences.addons[__name__].preferences
-        y_exp = 310
+        y_exp = 320
+
+        transNode = self.nodes.new('ShaderNodeOct3DTransform')
+        transNode.location = (-1200, 0)
 
         # Create the albedo setup.
         if "albedo" in self.textureTypes:
@@ -370,9 +373,15 @@ class MS_Init_ImportProcess():
                             multiplyNode.inputs[0], aoNode.outputs[0])
                         self.mat.node_tree.links.new(
                             self.mainMat.inputs['Albedo color'], multiplyNode.outputs[0])
+                        # Link transform node
+                        self.mat.node_tree.links.new(
+                            aoNode.inputs['Transform'], transNode.outputs[0])
                 else:
                     self.mat.node_tree.links.new(
                         self.mainMat.inputs['Albedo color'], texNode.outputs[0])
+                    # Link transform node
+                    self.mat.node_tree.links.new(
+                        texNode.inputs['Transform'], transNode.outputs[0])
 
         # Create the specular map setup
         if "specular" in self.textureTypes:
@@ -389,6 +398,9 @@ class MS_Init_ImportProcess():
 
                 self.mat.node_tree.links.new(
                     self.mainMat.inputs['Specular'], texNode.outputs[0])
+                # Link transform node
+                self.mat.node_tree.links.new(
+                    texNode.inputs['Transform'], transNode.outputs[0])
 
         # Create the roughness setup.
         if "roughness" in self.textureTypes:
@@ -403,6 +415,9 @@ class MS_Init_ImportProcess():
 
                 self.mat.node_tree.links.new(
                     self.mainMat.inputs['Roughness'], texNode.outputs[0])
+                # Link transform node
+                self.mat.node_tree.links.new(
+                    texNode.inputs['Transform'], transNode.outputs[0])
 
         # Create the metalness setup
         if "metalness" in self.textureTypes:
@@ -417,6 +432,9 @@ class MS_Init_ImportProcess():
 
                 self.mat.node_tree.links.new(
                     self.mainMat.inputs['Metallic'], texNode.outputs[0])
+                # Link transform node
+                self.mat.node_tree.links.new(
+                    texNode.inputs['Transform'], transNode.outputs[0])
 
         # Create the displacement setup.
         if "displacement" in self.textureTypes:
@@ -436,6 +454,7 @@ class MS_Init_ImportProcess():
                         'ShaderNodeOctDisplacementTex')
                     dispNode.displacement_level = prefs.disp_level_texture
                     #dispNode.displacement_filter = 'OCTANE_FILTER_TYPE_BOX'
+                    dispNode.displacement_surface = 'OCTANE_DISPLACEMENT_SMOOTH_NORMAL'
                     dispNode.inputs['Mid level'].default_value = 0.5
                     dispNode.inputs['Height'].default_value = 0.1
                 else:
@@ -452,6 +471,9 @@ class MS_Init_ImportProcess():
                     dispNode.inputs['Texture'], texNode.outputs[0])
                 self.mat.node_tree.links.new(
                     self.mainMat.inputs['Displacement'], dispNode.outputs[0])
+                # Link transform node
+                self.mat.node_tree.links.new(
+                    texNode.inputs['Transform'], transNode.outputs[0])
 
         # Create the translucency setup.
         if "translucency" in self.textureTypes:
@@ -475,6 +497,9 @@ class MS_Init_ImportProcess():
                     self.mainMat.inputs['Transmission'], texNode.outputs[0])
                 self.mat.node_tree.links.new(
                     self.mainMat.inputs['Medium'], scatterNode.outputs[0])
+                # Link transform node
+                self.mat.node_tree.links.new(
+                    texNode.inputs['Transform'], transNode.outputs[0])
 
         # Create the opacity setup
         if "opacity" in self.textureTypes:
@@ -508,6 +533,10 @@ class MS_Init_ImportProcess():
                 self.mat.blend_method = 'CLIP'
                 self.mat.shadow_method = 'CLIP'
 
+                # Link transform node
+                self.mat.node_tree.links.new(
+                    texNode.inputs['Transform'], transNode.outputs[0])
+
         # Create the normal map setup for Redshift.
         if "normal" in self.textureTypes:
             imgPath = self.GetTexturePath('normal')
@@ -521,6 +550,9 @@ class MS_Init_ImportProcess():
                 texNode.image.colorspace_settings.name = self.colorSpaces[0]
                 self.mat.node_tree.links.new(
                     self.mainMat.inputs['Normal'], texNode.outputs[0])
+                # Link transform node
+                self.mat.node_tree.links.new(
+                    texNode.inputs['Transform'], transNode.outputs[0])
 
         # Create the bump map setup
         if ("bump" in self.textureTypes) and (prefs.is_bump_enabled):
@@ -537,6 +569,10 @@ class MS_Init_ImportProcess():
 
                 #self.mat.node_tree.links.new(self.mainMat.inputs['Bump'], texNode.outputs[0])
 
+                # Link transform node
+                self.mat.node_tree.links.new(
+                    texNode.inputs['Transform'], transNode.outputs[0])
+
         # Create the cavity map setup
         if ("cavity" in self.textureTypes) and (prefs.is_cavity_enabled):
             imgPath = self.GetTexturePath("cavity")
@@ -549,6 +585,10 @@ class MS_Init_ImportProcess():
                 texNode.image = bpy.data.images.load(imgPath)
                 texNode.show_texture = True
                 texNode.image.colorspace_settings.name = self.colorSpaces[1]
+
+                # Link transform node
+                self.mat.node_tree.links.new(
+                    texNode.inputs['Transform'], transNode.outputs[0])
 
         # Create the cavity map setup
         if ("curvature" in self.textureTypes) and (prefs.is_curvature_enabled):
@@ -563,6 +603,10 @@ class MS_Init_ImportProcess():
                 texNode.show_texture = True
                 texNode.image.colorspace_settings.name = self.colorSpaces[1]
 
+                # Link transform node
+                self.mat.node_tree.links.new(
+                    texNode.inputs['Transform'], transNode.outputs[0])
+
         # Create the fuzziness setup.
         if ("fuzz" in self.textureTypes) and (prefs.is_fuze_enabled):
             imgPath = self.GetTexturePath('fuze')
@@ -575,6 +619,10 @@ class MS_Init_ImportProcess():
                 texNode.image = bpy.data.images.load(imgPath)
                 texNode.show_texture = True
                 texNode.image.colorspace_settings.name = self.colorSpaces[1]
+
+                # Link transform node
+                self.mat.node_tree.links.new(
+                    texNode.inputs['Transform'], transNode.outputs[0])
 
         # Deselect all nodes
         for node in self.nodes:
@@ -775,7 +823,7 @@ def menu_func_import(self, context):
 
 def register():
     bpy.utils.register_class(MS_Init_LiveLink)
-    #bpy.utils.register_class(MS_Init_Abc)
+    # bpy.utils.register_class(MS_Init_Abc)
     bpy.utils.register_class(MSLiveLinkPrefs)
     bpy.types.TOPBAR_MT_file_import.append(menu_func_import)
 
@@ -783,7 +831,7 @@ def register():
 def unregister():
     bpy.types.TOPBAR_MT_file_import.remove(menu_func_import)
     bpy.utils.unregister_class(MSLiveLinkPrefs)
-    #bpy.utils.register_class(MS_Init_Abc)
+    # bpy.utils.register_class(MS_Init_Abc)
     bpy.utils.unregister_class(MS_Init_LiveLink)
 
 

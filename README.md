@@ -7,7 +7,7 @@ Quixel Megascans Plugin for Octane Blender Edition
 
 [Quixel Official Documentation](https://help.quixel.com/hc/en-us/articles/360002425298-Installing-the-Megascans-Plugin-for-Blender-2-8)
 
-MSLiveLink Octane version 1.3.0
+MSLiveLink Octane version 1.4.0
 
 Official base addon version 2.7
 
@@ -16,7 +16,7 @@ OctaneRender™ for Blender 2019 and later
 ## Installation
 
 1. Download this repository as a zip and extract it
-2. Right click on the MSLiveLink_Octane folder (not the MSLiveLink-OC-Blender-master) and select Send > As ZIP file
+2. Right click on the **MSLiveLink_Octane** folder (not the MSLiveLink-OC-Blender-master) and select Send > As ZIP file
 4. In Octane Blender, install the addon from the zip file
 4. Activate it
 5. **File > Import > Start Megascans LiveLink Octane** will activate a socket client listening to the Megascans Bridge
