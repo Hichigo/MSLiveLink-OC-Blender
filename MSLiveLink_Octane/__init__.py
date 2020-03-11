@@ -490,7 +490,7 @@ class MS_Init_ImportProcess():
                     'ShaderNodeOctScatteringMedium')
                 scatterNode.inputs['Absorption Tex'].default_value = (
                     1, 1, 1, 1)
-                scatterNode.inputs['Invert abs.'].default_value = False
+                scatterNode.inputs['Invert abs.'].default_value = True
                 scatterNode.location = (-360, -1000)
 
                 self.mat.node_tree.links.new(
