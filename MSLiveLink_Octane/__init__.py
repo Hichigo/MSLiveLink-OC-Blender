@@ -31,7 +31,7 @@ bl_info = {
     "name": "Megascans LiveLink Octane",
     "description": "Connects Octane Blender to Quixel Bridge for one-click imports with shader setup and geometry",
     "author": "Yichen Dou",
-    "version": (1, 4, 0),
+    "version": (1, 4, 2),
     "blender": (2, 81, 0),
     "location": "File > Import",
     "warning": "",  # used for warning icon and text in addons panel
@@ -376,6 +376,8 @@ class MS_Init_ImportProcess():
                         # Link transform node
                         self.mat.node_tree.links.new(
                             aoNode.inputs['Transform'], transNode.outputs[0])
+                        self.mat.node_tree.links.new(
+                            texNode.inputs['Transform'], transNode.outputs[0])
                 else:
                     self.mat.node_tree.links.new(
                         self.mainMat.inputs['Albedo color'], texNode.outputs[0])
