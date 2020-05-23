@@ -13,6 +13,17 @@ Official base addon version 2.7
 
 OctaneRender™ for Blender 2019 and later
 
+## Questions
+- "Start Megascans Livelink Octane" is greyed out
+  - The active render engine is not octane
+- "Megascans LiveLink Octane is started already"
+  - You already started the addon. The socket client will last in background until you quit the Blender
+- I cannot see imported surface materials
+  - Surface material will not be assigned to selected objects automatically. Instead, you can find it in the Material Slots from Nodes editor
+- Other issues
+  - Please check the log from Blender > Topbar > Window > Toggle System Console and let me know what's happening
+
+
 ## Installation
 
 1. Go to [Releases](https://github.com/Yichen-Dou/MSLiveLink-OC-Blender/releases) and download the newest **MSLiveLink_Octane.zip**
