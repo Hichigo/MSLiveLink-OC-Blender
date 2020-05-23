@@ -7,7 +7,7 @@ Quixel Megascans Plugin for Octane Blender Edition
 
 [Quixel Official Documentation](https://help.quixel.com/hc/en-us/articles/360002425298-Installing-the-Megascans-Plugin-for-Blender-2-8)
 
-MSLiveLink Octane version 1.5.0 
+MSLiveLink Octane version 1.5.1
 
 Official base addon version 2.7
 
