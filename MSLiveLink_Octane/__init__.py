@@ -18,7 +18,7 @@ import threading
 import os
 import time
 import json
-import socket
+import socket, errno
 from bpy.types import Operator, AddonPreferences
 from bpy.props import IntProperty, EnumProperty, BoolProperty
 
@@ -31,7 +31,7 @@ bl_info = {
     "name": "Megascans LiveLink Octane",
     "description": "Connects Octane Blender to Quixel Bridge for one-click imports with shader setup and geometry",
     "author": "Yichen Dou",
-    "version": (1, 4, 2),
+    "version": (1, 5, 0),
     "blender": (2, 81, 0),
     "location": "File > Import",
     "warning": "",  # used for warning icon and text in addons panel
@@ -41,38 +41,43 @@ bl_info = {
     "category": "Import-Export"
 }
 
-
 # MS_Init_ImportProcess is the main asset import class.
 # This class is invoked whenever a new asset is set from Bridge.
 
 # Addon preferences
-disp_types = [
-    ('TEXTURE', 'Texture', 'Octane Texture Displacement'),
-    ('VERTEX', 'Vertex', 'Octane Vertex Displacement')
-]
-
-disp_levels_texture = [
-    ('OCTANE_DISPLACEMENT_LEVEL_256', '256', '256x256'),
-    ('OCTANE_DISPLACEMENT_LEVEL_512', '512', '512x512'),
-    ('OCTANE_DISPLACEMENT_LEVEL_1024', '1024', '1024x1024'),
-    ('OCTANE_DISPLACEMENT_LEVEL_2048', '2048', '2048x2048'),
-    ('OCTANE_DISPLACEMENT_LEVEL_4096', '4096', '4096x4096'),
-    ('OCTANE_DISPLACEMENT_LEVEL_8192', '8192', '8192x8192')
-]
-
-
 class MSLiveLinkPrefs(AddonPreferences):
     bl_idname = __name__
 
+    brdf_model: EnumProperty(
+        name='BRDF Model',
+        items=[
+            ('OCTANE_BRDF_OCTANE', 'Octane', ''),
+            ('OCTANE_BRDF_BECKMANN', 'Beckmann', ''),
+            ('OCTANE_BRDF_GGX', 'GGX', ''),
+            ('OCTANE_BRDF_WARD', 'Ward', '')
+        ],
+        default='OCTANE_BRDF_OCTANE'
+    ) 
+
     disp_type: EnumProperty(
-        items=disp_types,
+        items=[
+            ('TEXTURE', 'Texture', 'Octane Texture Displacement'),
+            ('VERTEX', 'Vertex', 'Octane Vertex Displacement')
+        ],
         name="Displacement Mode",
         description="Set default Octane displacement mode",
         default="TEXTURE"
     )
 
     disp_level_texture: EnumProperty(
-        items=disp_levels_texture,
+        items=[
+            ('OCTANE_DISPLACEMENT_LEVEL_256', '256', '256x256'),
+            ('OCTANE_DISPLACEMENT_LEVEL_512', '512', '512x512'),
+            ('OCTANE_DISPLACEMENT_LEVEL_1024', '1024', '1024x1024'),
+            ('OCTANE_DISPLACEMENT_LEVEL_2048', '2048', '2048x2048'),
+            ('OCTANE_DISPLACEMENT_LEVEL_4096', '4096', '4096x4096'),
+            ('OCTANE_DISPLACEMENT_LEVEL_8192', '8192', '8192x8192')
+        ],
         name="Subdivision",
         default="OCTANE_DISPLACEMENT_LEVEL_4096"
     )
@@ -107,7 +112,8 @@ class MSLiveLinkPrefs(AddonPreferences):
     def draw(self, context):
         layout = self.layout
         col = layout.column()
-        row = col.row()
+        col.prop(self, "brdf_model")
+        row = col.row(align=True)
         row.prop(self, "disp_type")
         if(self.disp_type == "TEXTURE"):
             row.prop(self, "disp_level_texture")
@@ -117,7 +123,6 @@ class MSLiveLinkPrefs(AddonPreferences):
         col.prop(self, "is_curvature_enabled")
         col.prop(self, "is_bump_enabled")
         col.prop(self, "is_fuze_enabled")
-
 
 class MS_Init_ImportProcess():
 
@@ -237,7 +242,8 @@ class MS_Init_ImportProcess():
 
                 if self.isAlembic:
                     globals()['MG_Material'].append(self.mat)
-
+            else:
+                print('The Render engine is not Octane, failed to import textures/geometry')
         except Exception as e:
             print("Megascans LiveLink Error while importing textures/geometry or setting up material. Error: ", str(e))
 
@@ -321,6 +327,7 @@ class MS_Init_ImportProcess():
     # Material setup
     # Shader setups for all asset types. Some type specific functionality is also handled here.
     def CreateMaterial(self):
+        prefs = bpy.context.preferences.addons[__name__].preferences
         self.mat = bpy.data.materials.new(self.materialName)
         self.mat.use_nodes = True
         self.nodes = self.mat.node_tree.nodes
@@ -329,6 +336,7 @@ class MS_Init_ImportProcess():
         self.outNode = self.nodes[0]
         oldMainMat = self.nodes[1]
         self.mainMat = self.nodes.new('ShaderNodeOctUniversalMat')
+        self.mainMat.brdf_model = prefs.brdf_model
         self.mainMat.location = oldMainMat.location
         self.nodes.remove(oldMainMat)
         self.mat.node_tree.links.new(
@@ -688,7 +696,7 @@ class ms_Init(threading.Thread):
                             self.importer(self.TotalData)
                             break
         except Exception as e:
-            print("Megascans LiveLink Error initializing the thread. Error: ", str(e))
+            print("Megascans LiveLink Error initializing the thread. Error: " + str(e))
 
 
 class thread_checker(threading.Thread):
@@ -725,16 +733,17 @@ class MS_Init_LiveLink(bpy.types.Operator):
     socketCount = 0
 
     def execute(self, context):
-
         try:
             globals()['Megascans_DataSet'] = None
             self.thread_ = threading.Thread(target=self.socketMonitor)
             self.thread_.start()
             bpy.app.timers.register(self.newDataMonitor)
-            print("Megascans LiveLink Octane Started")
+            print("Megascans LiveLink Octane Started. Tips: Imported Surface material can be found in the Material Slots")
+            self.report({'INFO'}, 'Megascans LiveLink Octane Started. Tips: Imported Surface material can be found in the Material Slots')
             return {'FINISHED'}
         except Exception as e:
             print("Megascans LiveLink error starting blender plugin. Error: ", str(e))
+            self.report({'WARNING'}, 'Megascans LiveLink error starting blender plugin. Error: ' + str(e))
             return {"FAILED"}
 
     def newDataMonitor(self):
@@ -816,11 +825,29 @@ class MS_Init_Abc(bpy.types.Operator):
             print("Megascans Plugin Error starting MS_Init_Abc. Error: ", str(e))
             return {"CANCELLED"}
 
+# Check if the port is in use
+def is_port_in_use(port):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        try:
+            s.bind(("127.0.0.1", port))
+        except socket.error as e:
+            if e.errno == errno.EADDRINUSE:
+                return True
+        s.close()
+        return False
 
 def menu_func_import(self, context):
-    self.layout.operator(MS_Init_LiveLink.bl_idname,
-                         text="Start Megascans LiveLink Octane")
-    #self.layout.operator(MS_Init_Abc.bl_idname, text="Import Megascans Alembic for Octane)")
+    layout = self.layout
+    col = layout.column()
+    if(context.scene.render.engine == 'octane'):
+        if(not is_port_in_use(28888)):
+            col.operator(MS_Init_LiveLink.bl_idname, text="Start Megascans LiveLink Octane")
+        else:
+            col.label(text='Megascans LiveLink Octane is started already')
+    else:
+        col.enabled = False
+        col.operator(MS_Init_LiveLink.bl_idname, text="Start Megascans LiveLink Octane")
+    #col.operator(MS_Init_Abc.bl_idname, text="Import Megascans Alembic for Octane)")
 
 
 def register():
