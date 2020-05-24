@@ -20,6 +20,10 @@ OctaneRender™ for Blender 2019 and later
   - You already started the addon. The socket client will last in background until you quit the Blender
 - I cannot see imported surface materials
   - Surface material will not be assigned to selected objects automatically. Instead, you can find it in the Material Slots from Nodes editor
+- Mesh is imported without a correct material and the console prints "key 'Principled BSDF' not found"
+  - There is a confict when both official addon and my addon are installed on a same machine
+  - Remove the official addon
+    - If you found a folder called "MSPlugin" in C:\Users\[Your username]\AppData\Roaming\Blender Foundation\Blender\2.8X\scripts\startup, kill it and repeat steps to install the addon and restart the Blender
 - Other issues
   - Please check the log from Blender > Topbar > Window > Toggle System Console and let me know what's happening
 
