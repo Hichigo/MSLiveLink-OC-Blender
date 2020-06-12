@@ -35,7 +35,8 @@ OctaneRender™ for Blender 2019 and later
 4. Activate it
 5. **File > Import > Start Megascans LiveLink Octane** will activate a socket client listening to the Megascans Bridge
 6. Open the Megascans Bridge and change the export method to Blender
-7. Click export. Feel fun
+7. **[Important]** If you are not allowed to click "Export" unless you click the "Download Plugin", please be aware that it will put a copy of official add-on into C:\Users\[Your username]\AppData\Roaming\Blender Foundation\Blender\2.8X\scripts\startup. It must conflict with the addon I made. This happens after 2020 versions
+8. Click export. Feel fun
 
 ![image-20200308172530172](assets/image-20200308172530172.png)
 
