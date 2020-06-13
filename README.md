@@ -1,6 +1,9 @@
 # MSLiveLink-OC-Blender
 Quixel Megascans Plugin for Octane Blender Edition
 
+**This project has been archived because it is now a module of the Octane Helper addon. Further development will only take place in Octane Helper.**
+[Octane Helper](https://github.com/Yichen-Dou/OC-Blender-Helper-Addon)
+
 ## Versions
 
 > Windows
