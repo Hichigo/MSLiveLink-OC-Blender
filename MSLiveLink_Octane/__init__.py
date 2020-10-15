@@ -333,8 +333,8 @@ class MS_Init_ImportProcess():
         self.nodes = self.mat.node_tree.nodes
 
         # Replace default octane shader with a universal shader
-        self.outNode = self.nodes[0]
-        oldMainMat = self.nodes[1]
+        self.outNode = self.nodes[1]
+        oldMainMat = self.nodes[0]
         self.mainMat = self.nodes.new('ShaderNodeOctUniversalMat')
         self.mainMat.brdf_model = prefs.brdf_model
         self.mainMat.location = oldMainMat.location
